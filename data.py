@@ -4,6 +4,9 @@ import yfinance as yf
 
 
 def data(tickers):
+    '''
+    downloading data
+    '''
     #data download
     df = yf.download(tickers, start=START, auto_adjust=True)
      
