@@ -1,4 +1,4 @@
-from config import strat_mom_tickers, COMPARISON_TICK, CRYPTO_C_DAYS, EQUITIES_C_DAYS
+from config import STRAT_MOM_TICKERS, COMPARISON_TICK, CRYPTO_C_DAYS, EQUITIES_C_DAYS
 from data import data
 from strategy import cross_mom_strat
 from backtest import costs, net_pnl, strat_performance, buy_and_hold
@@ -7,7 +7,7 @@ from reporting import summary_table
 
 def main():
     #strat momentum crossover
-    universe_close, universe_returns = data(strat_mom_tickers)
+    universe_close, universe_returns = data(STRAT_MOM_TICKERS)
     strat_mom_returns, strat_mom_positions = cross_mom_strat(universe_close, universe_returns)
     strat_mom_costs = costs(strat_mom_positions)
     strat_mom_pnl = net_pnl(strat_mom_returns, strat_mom_costs)
