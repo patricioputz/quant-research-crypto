@@ -36,6 +36,7 @@ def main():
     ("SPY B&H", spy_sharpe, spy_mdd, spy_performance.iloc[-1]),
     ("Crypto B&H", crypto_bh_sharpe, crypto_bh_mdd, crypto_bh_performance.iloc[-1]),
     ])
+    
     print(table)
 
 
