@@ -1,4 +1,4 @@
-from config import STRAT_MOM_TICKERS, COMPARISON_TICK, CRYPTO_C_DAYS, EQUITIES_C_DAYS
+from config import STRAT_MOM_TICKERS, COMPARISON_TICK, CRYPTO_C_DAYS, EQUITIES_C_DAYS, LOOKBACK, HOLD, N_LONG, N_SHORT
 from data import data
 from strategy import cross_mom_strat
 from backtest import costs, net_pnl, strat_performance, buy_and_hold
@@ -9,7 +9,7 @@ from reporting import summary_table
 def main():
     # --- Strategy: cross-sectional momentum on crypto universe ---
     universe_close, universe_returns = data(STRAT_MOM_TICKERS)
-    strat_mom_returns, strat_mom_positions = cross_mom_strat(universe_close, universe_returns)
+    strat_mom_returns, strat_mom_positions = cross_mom_strat(universe_close, universe_returns, LOOKBACK, HOLD, N_LONG, N_SHORT)
 
     # Apply transaction costs based on turnover, then compute net P&L
     strat_mom_costs = costs(strat_mom_positions)
