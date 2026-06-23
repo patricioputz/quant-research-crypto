@@ -2,20 +2,6 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
  
-#constants
-LOOKBACK = 30  # days of trailing momentum to rank on
-HOLD     = 7   # rebalance every N days
-N_LONG = 3     # number of assets to long
-N_SHORT = 3    # number of assets to short (set 0 for long-only)
-COST_BPS = 10
-START = '2024-01-01'
-COMPARISON_TICK = 'SPY'
-CRYPTO_C_DAYS = 365
-EQUITIES_C_DAYS = 252
-
-# UNIVERSE (Established liquid cryptos)
-strat_mom_tickers = ['BTC-USD', 'ETH-USD', 'SOL-USD', 'BNB-USD', 'ADA-USD',
-           'XRP-USD', 'AVAX-USD', 'DOT-USD', 'LINK-USD', 'DOGE-USD']
 
 def data(tickers):
     #data download
