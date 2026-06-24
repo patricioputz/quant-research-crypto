@@ -37,7 +37,7 @@ def main():
 
     # Baseline 2: Equal-weight crypto buy-and-hold (no stock picking, just market exposure)
     # Takes mean return across all assets for each date
-    crypto_bh_returns = (universe_returns.sum(axis='columns') / universe_returns.shape[1])  # type: ignore
+    crypto_bh_returns = universe_returns.mean(axis=1)  # type: ignore[call-overload]
     crypto_bh_performance = buy_and_hold(crypto_bh_returns)
     crypto_bh_sharpe, crypto_bh_mdd = metrics(
         crypto_bh_returns, CRYPTO_C_DAYS, crypto_bh_performance
