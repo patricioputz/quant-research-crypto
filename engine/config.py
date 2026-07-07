@@ -1,16 +1,39 @@
 # --- Universe & data ---
-STRAT_MOM_TICKERS = ['BTC-USD', 'ETH-USD', 'SOL-USD', 'BNB-USD', 'ADA-USD',
-                     'XRP-USD', 'AVAX-USD', 'DOT-USD', 'LINK-USD', 'DOGE-USD']
-EQUITY_TICKERS = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META',
-                  'NVDA', 'JPM', 'XOM', 'UNH', 'V']  # cross-asset comparison universe: 10 liquid large-caps
+CRYPTO_TICKERS = ['BTC-USD', 'ETH-USD', 'SOL-USD', 'BNB-USD', 'ADA-USD',
+                  'XRP-USD', 'AVAX-USD', 'DOT-USD', 'LINK-USD', 'DOGE-USD']
+EQUITY_TICKERS = [
+    # Tech (7)
+    'AAPL', 'MSFT', 'NVDA', 'GOOGL', 'META', 'ADBE', 'CRM',
+    # Financials (7)
+    'JPM', 'BAC', 'GS', 'MS', 'V', 'MA', 'BRK-B',
+    # Healthcare (6)
+    'UNH', 'JNJ', 'LLY', 'PFE', 'ABBV', 'MRK',
+    # Energy (5)
+    'XOM', 'CVX', 'COP', 'SLB', 'OXY',
+    # Consumer Discretionary (6)
+    'AMZN', 'TSLA', 'HD', 'NKE', 'MCD', 'SBUX',
+    # Consumer Staples (5)
+    'WMT', 'PG', 'KO', 'PEP', 'COST',
+    # Industrials (5)
+    'BA', 'CAT', 'HON', 'UPS', 'GE',
+    # Materials (3)
+    'LIN', 'FCX', 'NEM',
+    # Utilities (3)
+    'NEE', 'DUK', 'SO',
+    # Communication Services (3)
+    'DIS', 'NFLX', 'CMCSA',
+]
 COMPARISON_TICK = 'SPY'          # buy-and-hold baseline ticker
 START = '2021-01-01'             # data start date
 
 # --- Strategy signal / construction ---
 LOOKBACK = 30       # days of trailing momentum to rank on
 HOLD = 7            # rebalance every N days
-N_LONG = 3          # number of assets to long
-N_SHORT = 3         # number of assets to short (set 0 for long-only)
+SELECTION_PCT = 0.20  # fraction of the universe held long, and separately held short (0.20 = top/bottom 20%)
+N_LONG = max(1, int(len(CRYPTO_TICKERS) * SELECTION_PCT))    # number of crypto assets to long
+N_SHORT = max(1, int(len(CRYPTO_TICKERS) * SELECTION_PCT))   # number of crypto assets to short (0 for long-only)
+N_LONG_EQUITY = max(1, int(len(EQUITY_TICKERS) * SELECTION_PCT))   # number of equity assets to long
+N_SHORT_EQUITY = max(1, int(len(EQUITY_TICKERS) * SELECTION_PCT))  # number of equity assets to short
 VOL_LOOKBACK = 30   # days of trailing volatility used to scale position sizing
 
 # --- Risk controls ---

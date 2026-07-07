@@ -5,7 +5,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from itertools import product
-from engine.config import STRAT_MOM_TICKERS, N_LONG, N_SHORT, LOOKBACK_VALUES, HOLD_VALUES, VOL_LOOKBACK, GROSS_TARGET, CRYPTO_C_DAYS
+from engine.config import CRYPTO_TICKERS, N_LONG, N_SHORT, LOOKBACK_VALUES, HOLD_VALUES, VOL_LOOKBACK, GROSS_TARGET, CRYPTO_C_DAYS
 from engine.data import data
 from strategies.momentum import cross_mom_strat
 from engine.backtest import costs, net_pnl, compute_cum_returns
@@ -58,5 +58,5 @@ def run_sweep(close, returns, lookback_values, hold_values, n_long, n_short, cal
     return best_combo
 
 if __name__ == "__main__":
-    universe_close, universe_returns = data(STRAT_MOM_TICKERS)
+    universe_close, universe_returns = data(CRYPTO_TICKERS)
     best_params = run_sweep(universe_close, universe_returns, LOOKBACK_VALUES, HOLD_VALUES, N_LONG, N_SHORT)

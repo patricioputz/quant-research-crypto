@@ -1,7 +1,7 @@
 """Main entry point for cross-momentum strategy backtesting and comparison."""
 
 from engine.config import (
-    STRAT_MOM_TICKERS, EQUITY_TICKERS, COMPARISON_TICK, CRYPTO_C_DAYS, EQUITIES_C_DAYS,
+    CRYPTO_TICKERS, EQUITY_TICKERS, COMPARISON_TICK, CRYPTO_C_DAYS, EQUITIES_C_DAYS,
     LOOKBACK, HOLD, N_LONG, N_SHORT, VOL_LOOKBACK, GROSS_TARGET,
     LOOKBACK_VALUES, HOLD_VALUES,
 )
@@ -23,7 +23,7 @@ def main():
     - Equal-weight crypto buy-and-hold (cross-sectional skill baseline)
     """
     # Load data
-    universe_close, universe_returns = data(STRAT_MOM_TICKERS)
+    universe_close, universe_returns = data(CRYPTO_TICKERS)
 
     # Run strategy with configured parameters
     strat_mom_returns, strat_mom_positions = cross_mom_strat(
@@ -80,7 +80,7 @@ def main():
     print("Naive: crypto params, unchanged")
     run_cross_asset(equity_close, equity_returns)
 
-    print("\nEquities-tuned sweep (3-12mo lookback, monthly hold):")
+    print("\nEquities-tuned sweep (2-8mo lookback, monthly hold):")
     best_equity = sweep_equities(equity_close, equity_returns)
     print(f"\nBest equities params: LOOKBACK={best_equity['lookback']}, HOLD={best_equity['hold']} "
           f"(Sharpe {best_equity['sharpe']:.2f})")

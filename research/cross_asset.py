@@ -9,7 +9,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from engine.config import (
-    EQUITY_TICKERS, EQUITIES_C_DAYS, LOOKBACK, HOLD, N_LONG, N_SHORT, VOL_LOOKBACK, GROSS_TARGET,
+    EQUITY_TICKERS, EQUITIES_C_DAYS, LOOKBACK, HOLD, N_LONG_EQUITY, N_SHORT_EQUITY, VOL_LOOKBACK, GROSS_TARGET,
     EQUITY_LOOKBACK_VALUES, EQUITY_HOLD_VALUES,
 )
 from engine.data import data
@@ -30,7 +30,7 @@ def run_cross_asset(close, returns, lookback=LOOKBACK, hold=HOLD):
     as a baseline in the main crypto comparison.)
     """
     strat_returns, strat_positions = cross_mom_strat(
-        close, returns, lookback, hold, N_LONG, N_SHORT, VOL_LOOKBACK, GROSS_TARGET
+        close, returns, lookback, hold, N_LONG_EQUITY, N_SHORT_EQUITY, VOL_LOOKBACK, GROSS_TARGET
     )
     strat_costs = costs(strat_positions)
     strat_pnl = net_pnl(strat_returns, strat_costs)
@@ -57,7 +57,7 @@ def sweep_equities(close, returns):
     EQUITY_LOOKBACK_VALUES/EQUITY_HOLD_VALUES (3-12 months, monthly rebalance)
     instead, with Sharpe annualized on the 252-day equities calendar.
     """
-    return run_sweep(close, returns, EQUITY_LOOKBACK_VALUES, EQUITY_HOLD_VALUES, N_LONG, N_SHORT, EQUITIES_C_DAYS)
+    return run_sweep(close, returns, EQUITY_LOOKBACK_VALUES, EQUITY_HOLD_VALUES, N_LONG_EQUITY, N_SHORT_EQUITY, EQUITIES_C_DAYS)
 
 
 if __name__ == "__main__":

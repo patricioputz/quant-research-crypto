@@ -36,10 +36,10 @@ def walk_forward_analysis(close, returns, n_long, n_short, vol_lookback):
     return best['lookback'], best['hold'], best['sharpe'], test_strat_sharpe, test_strat_mdd, test_strat_performance.iloc[-1]
 
 if __name__ == "__main__":
-    from engine.config import STRAT_MOM_TICKERS, N_LONG, N_SHORT, VOL_LOOKBACK
+    from engine.config import CRYPTO_TICKERS, N_LONG, N_SHORT, VOL_LOOKBACK
     from engine.data import data
 
-    universe_close, universe_returns = data(STRAT_MOM_TICKERS)
+    universe_close, universe_returns = data(CRYPTO_TICKERS)
     best_lb, best_hold, train_sharpe, test_sharpe, test_mdd, test_final_value = walk_forward_analysis(
         universe_close, universe_returns, N_LONG, N_SHORT, VOL_LOOKBACK
     )
