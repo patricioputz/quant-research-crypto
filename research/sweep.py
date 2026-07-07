@@ -13,17 +13,21 @@ from engine.metrics import metrics
 from engine.reporting import summary_table
 
 
-def run_sweep(close, returns, lookback_values, hold_values, n_long, n_short):
+def run_sweep(close, returns, lookback_values, hold_values, n_long, n_short, calendar_days=CRYPTO_C_DAYS):
     """Execute a grid search over lookback and hold period parameters.
 
     Tests all combinations of lookback (momentum calculation period) and hold
     (rebalance frequency) values. For each combination, computes strategy metrics
     including Sharpe ratio, max drawdown, and final portfolio value.
 
+    calendar_days controls Sharpe annualization (365 for crypto, 252 for
+    equities) — defaults to crypto since that's the primary universe, but
+    must be passed explicitly for any other asset class.
+
     Return the single best combo by Sharpe.
     """
     results = []
-    table_rows = [] 
+    table_rows = []
 
     for lb, h in product(lookback_values, hold_values):
         strat_mom_returns, strat_mom_positions = cross_mom_strat(
@@ -32,7 +36,7 @@ def run_sweep(close, returns, lookback_values, hold_values, n_long, n_short):
         strat_mom_costs = costs(strat_mom_positions)
         strat_mom_pnl = net_pnl(strat_mom_returns, strat_mom_costs)
         mom_performance = compute_cum_returns(strat_mom_pnl)
-        mom_sharpe, mom_mdd = metrics(strat_mom_pnl, CRYPTO_C_DAYS, mom_performance)
+        mom_sharpe, mom_mdd = metrics(strat_mom_pnl, calendar_days, mom_performance)
 
         label = f"LB={lb}, HOLD={h}"
         table_rows.append((label, mom_sharpe, mom_mdd, mom_performance.iloc[-1])) # for printing a table of results

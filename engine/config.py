@@ -29,5 +29,8 @@ TRAIN_DAYS = 365 * 2         # days used to select best params (in-sample)
 TEST_DAYS = 365 // 2         # days used to evaluate those params (out-of-sample)
 
 # --- Sweep ---
-LOOKBACK_VALUES = [15, 30, 45, 60]
+LOOKBACK_VALUES = [15, 30, 45, 60]        # crypto: weeks-scale, matches its faster momentum/reversal cycle
 HOLD_VALUES = [3, 7, 14]
+
+EQUITY_LOOKBACK_VALUES = [63, 126, 189, 252]  # equities: 3-12 months, the standard academic momentum window
+EQUITY_HOLD_VALUES = [21, 42, 63]             # monthly-ish rebalance — 1-3 month hold, not weekly
