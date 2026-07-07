@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
-from config import LIQUIDATION_THRESHOLD, GROSS_TARGET
+from engine.config import LIQUIDATION_THRESHOLD, GROSS_TARGET
+from engine.backtest import apply_liquidation_threshold
 
 
 def cross_mom_strat(close, returns, lookback, hold, n_long, n_short, vol_lookback, gross_target):
@@ -56,8 +57,7 @@ def cross_mom_strat(close, returns, lookback, hold, n_long, n_short, vol_lookbac
     positions.loc[~is_rebalance_day] = np.nan  # only actually trade on rebalance days
     positions = positions.ffill()  # hold the position steady until next rebalance
 
-    position_returns = positions * returns
-    position_returns_capped = position_returns.clip(lower=LIQUIDATION_THRESHOLD)  # simulate forced close-out, stop one name from tanking the book
+    position_returns_capped = apply_liquidation_threshold(positions, returns, LIQUIDATION_THRESHOLD)
     strat_returns = position_returns_capped.sum(axis=1)
 
     return strat_returns, positions

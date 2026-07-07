@@ -1,14 +1,17 @@
 """Main entry point for cross-momentum strategy backtesting and comparison."""
 
-from config import (
+from engine.config import (
     STRAT_MOM_TICKERS, COMPARISON_TICK, CRYPTO_C_DAYS, EQUITIES_C_DAYS,
-    LOOKBACK, HOLD, N_LONG, N_SHORT, VOL_LOOKBACK, GROSS_TARGET
+    LOOKBACK, HOLD, N_LONG, N_SHORT, VOL_LOOKBACK, GROSS_TARGET,
+    LOOKBACK_VALUES, HOLD_VALUES,
 )
-from data import data
-from strategy import cross_mom_strat
-from backtest import costs, net_pnl, strat_performance, buy_and_hold
-from metrics import metrics
-from reporting import summary_table
+from engine.data import data
+from strategies.momentum import cross_mom_strat
+from engine.backtest import costs, net_pnl, compute_cum_returns, buy_and_hold
+from engine.metrics import metrics
+from engine.reporting import summary_table
+from research.sweep import run_sweep
+from research.validation import walk_forward_analysis
 
 
 def main():
@@ -27,7 +30,7 @@ def main():
     )
     strat_mom_costs = costs(strat_mom_positions)
     strat_mom_pnl = net_pnl(strat_mom_returns, strat_mom_costs)
-    mom_performance = strat_performance(strat_mom_pnl)
+    mom_performance = compute_cum_returns(strat_mom_pnl)
     mom_sharpe, mom_mdd = metrics(strat_mom_pnl, CRYPTO_C_DAYS, mom_performance)
 
     # Baseline 1: SPY buy-and-hold (equities market comparison)
@@ -51,6 +54,20 @@ def main():
     ])
 
     print(table)
+
+    # Parameter sweep: how sensitive is the result to LOOKBACK/HOLD choice?
+    print("\nParameter sweep (LOOKBACK x HOLD grid):")
+    run_sweep(universe_close, universe_returns, LOOKBACK_VALUES, HOLD_VALUES, N_LONG, N_SHORT)
+
+    # Walk-forward validation: params picked on train data only, scored on held-out test data
+    wf_lookback, wf_hold, wf_train_sharpe, wf_test_sharpe, wf_test_mdd, wf_test_final_value = walk_forward_analysis(
+        universe_close, universe_returns, N_LONG, N_SHORT, VOL_LOOKBACK
+    )
+    print(f"\nWalk-forward: selected LOOKBACK={wf_lookback}, HOLD={wf_hold} on train "
+          f"(train Sharpe {wf_train_sharpe:.3f})")
+    print(f"Out-of-sample: Sharpe {wf_test_sharpe:.3f}, Max DD {wf_test_mdd:.3f}, "
+          f"Final Value {wf_test_final_value:.3f}")
+    print(f"Overfitting gap: {wf_train_sharpe - wf_test_sharpe:.3f}")
 
 
 if __name__ == "__main__":

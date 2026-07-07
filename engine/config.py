@@ -25,5 +25,7 @@ EQUITIES_C_DAYS = 252  # equities trade weekdays only
 # --- Walk-forward validation ---
 TRAIN_DAYS = 365 * 2         # days used to select best params (in-sample)
 TEST_DAYS = 365 // 2         # days used to evaluate those params (out-of-sample)
-WF_LOOKBACK_VALUES = [15, 30, 45, 60]
-WF_HOLD_VALUES = [3, 7, 14]
+
+# --- Sweep ---
+LOOKBACK_VALUES = [15, 30, 45, 60]
+HOLD_VALUES = [3, 7, 14]

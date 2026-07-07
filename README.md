@@ -14,7 +14,7 @@ A long/short strategy that ranks assets against each other by trailing return an
 - **Rebalance:** Every `HOLD` days
 - **Costs:** Modeled via turnover × assumed bps per trade (not free — every rotation has a price)
 
-All parameters live in `config.py` — no magic numbers buried in logic.
+All parameters live in `engine/config.py` — no magic numbers buried in logic.
 
 ## Why Three Baselines, Not One
 
@@ -38,16 +38,26 @@ A strategy that beats SPY by riding a crypto bull run isn't skill. A strategy th
 ## Architecture
 
 ```
-config.py       — all strategy parameters and constants, single source of truth
-data.py         — data download + cleaning (yfinance), shape-normalized for 1 or N tickers
-strategy.py     — signal generation and position construction (the actual edge)
-backtest.py     — turnover, transaction costs, net P&L, cumulative performance
-metrics.py      — Sharpe ratio, max drawdown
-reporting.py    — comparison table across any number of strategies/baselines
-main.py         — wires it all together, runs the full pipeline
+engine/                   — shared backtest machinery, used by every strategy
+  config.py               — all strategy parameters and constants, single source of truth
+  data.py                 — data download + cleaning (yfinance), shape-normalized for 1 or N tickers
+  backtest.py             — turnover, transaction costs, net P&L, cumulative performance, liquidation cap
+  metrics.py              — Sharpe ratio, max drawdown
+  reporting.py            — comparison table across any number of strategies/baselines
+
+strategies/               — the actual signals (the edge)
+  momentum.py             — cross-sectional momentum: signal generation + position construction
+
+research/                 — validation tooling, not part of the runtime path
+  sweep.py                — grid search over LOOKBACK/HOLD, returns the best combo by Sharpe
+  validation.py           — walk-forward validation: params picked on train, scored on held-out test
+  NOTES.md                — research log — design decisions, bugs found, what they mean
+
+tests/                    — unit tests (planned)
+main.py                   — wires it all together, runs the full pipeline
 ```
 
-Each file has exactly one job. Adding a new strategy means adding a new file in the same shape as `strategy.py` and a new entry in `main.py` — the rest of the pipeline (costs, metrics, reporting) doesn't change.
+Each file has exactly one job. Adding a new strategy means adding a new file to `strategies/` in the same shape as `momentum.py` and a new entry in `main.py` — the rest of the pipeline (costs, metrics, reporting) doesn't change.
 
 ## Running It
 
@@ -55,8 +65,12 @@ Each file has exactly one job. Adding a new strategy means adding a new file in 
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-python3 main.py
+python3 main.py                    # full pipeline: strategy vs baselines, sweep, walk-forward
+python3 -m research.sweep          # sweep only
+python3 -m research.validation     # walk-forward only
 ```
+
+`research/` scripts are packages, not standalone scripts — run them with `-m` from the project root (not `python3 research/sweep.py`), so the `engine`/`strategies` imports resolve.
 
 ## Roadmap
 
