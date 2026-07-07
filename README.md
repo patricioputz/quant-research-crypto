@@ -1,38 +1,37 @@
-# Quant Research Crypto
+# Quant Research Engine
 
-Systematic trading strategy research — backtesting framework for evaluating signal-driven strategies against honest baselines, with rigor on lookahead bias, transaction costs, and risk-adjusted performance.
+A personal research engine for testing systematic trading signals against honest baselines, with rigor on lookahead bias, transaction costs, and risk-adjusted performance.
 
-This isn't a single strategy repo. It's the start of an ongoing research environment: a place to test ideas, validate them properly, and only keep what survives scrutiny.
+It's not a single strategy repo — it's a shared backtest/validation harness (`engine/`) that any strategy (`strategies/`) can plug into, so testing a new idea means writing the signal, not rebuilding the pipeline. Roadmap and status are tracked outside this file (not published).
 
-## Current Strategy: Cross-Sectional Momentum
+## What's Been Tested So Far
 
-A long/short strategy that ranks assets against each other by trailing return and rotates into relative winners, away from relative losers.
+**Strategy: Cross-Sectional Momentum** (`strategies/momentum.py`) — ranks assets against each other by trailing return, goes long the relative winners and short the relative losers, vol-scaled and gross-capped for risk control.
 
-- **Universe:** 10 liquid cryptocurrencies (BTC, ETH, SOL, BNB, ADA, XRP, AVAX, DOT, LINK, DOGE)
-- **Signal:** `LOOKBACK`-day trailing return, ranked cross-sectionally each rebalance
-- **Construction:** Long top-N, short bottom-N, equal-weighted within each side
-- **Rebalance:** Every `HOLD` days
-- **Costs:** Modeled via turnover × assumed bps per trade (not free — every rotation has a price)
+- **Crypto** (10 liquid names: BTC, ETH, SOL, BNB, ADA, XRP, AVAX, DOT, LINK, DOGE) — baselined against SPY buy-and-hold and equal-weight crypto buy-and-hold.
+- **Equities** (10 large-caps) — same signal, unchanged parameters, baselined against SPY buy-and-hold and equal-weight equity buy-and-hold. Result: doesn't generalize as-is — crypto-speed params are too fast for how equities momentum actually behaves.
+- **Walk-forward validated** — parameters are selected on a training window and scored once, out-of-sample, on a held-out test window, so results aren't just an in-sample-fit artifact.
 
 All parameters live in `engine/config.py` — no magic numbers buried in logic.
 
-## Why Three Baselines, Not One
+## Why Multiple Baselines, Not One
 
-A strategy's raw return means nothing without honest comparison points. This framework checks the result against:
+A strategy's raw return means nothing without honest comparison points. Every run checks the result against:
 
 | Comparison | What it isolates |
 |---|---|
-| **SPY buy-and-hold** | Did this beat the equities market at all? |
-| **Equal-weight crypto buy-and-hold** | Did the *signal* add value, or did it just ride the crypto asset class? |
-| **The strategy itself** | Sharpe and max drawdown, not just total return — risk-adjusted, not vanity metrics |
+| **SPY buy-and-hold** | Did this beat the broad equities market at all? |
+| **Equal-weight buy-and-hold (same universe)** | Did the *signal* add value, or did it just ride the asset class? |
+| **The strategy itself, out-of-sample** | Sharpe and max drawdown on data the parameter selection never saw |
 
-A strategy that beats SPY by riding a crypto bull run isn't skill. A strategy that beats *naive crypto exposure* on a risk-adjusted basis is a real signal. This repo is built to never confuse the two.
+A strategy that beats SPY by riding a bull run isn't skill. A strategy that beats naive buy-and-hold on the same universe, out-of-sample, on a risk-adjusted basis, is a real signal. This repo is built to never confuse the two.
 
 ## Methodology Commitments
 
 - **No lookahead bias.** Every signal is computed on data available *as of the prior day's close* (`.shift(1)` on all ranking logic) before being acted on.
 - **Costs are real.** Turnover is computed explicitly; returns are reported net of an assumed transaction cost, not gross.
 - **Sharpe is annualized correctly per asset class** — √365 for crypto (trades every day), √252 for equities (trades weekdays only).
+- **Parameters are validated out-of-sample**, not just picked by eyeballing a full-history sweep.
 - **Every number is sanity-checked against intuition** before being trusted — implausibly high Sharpe is treated as a bug signal, not a result to celebrate.
 
 ## Architecture
@@ -51,6 +50,7 @@ strategies/               — the actual signals (the edge)
 research/                 — validation tooling, not part of the runtime path
   sweep.py                — grid search over LOOKBACK/HOLD, returns the best combo by Sharpe
   validation.py           — walk-forward validation: params picked on train, scored on held-out test
+  cross_asset.py          — runs a strategy, unchanged, on a different asset class
   NOTES.md                — research log — design decisions, bugs found, what they mean
 
 tests/                    — unit tests (planned)
@@ -65,21 +65,10 @@ Each file has exactly one job. Adding a new strategy means adding a new file to 
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-python3 main.py                    # full pipeline: strategy vs baselines, sweep, walk-forward
+python3 main.py                    # full pipeline: strategy vs baselines, sweep, walk-forward, cross-asset
 python3 -m research.sweep          # sweep only
 python3 -m research.validation     # walk-forward only
+python3 -m research.cross_asset    # cross-asset check only
 ```
 
 `research/` scripts are packages, not standalone scripts — run them with `-m` from the project root (not `python3 research/sweep.py`), so the `engine`/`strategies` imports resolve.
-
-## Roadmap
-
-This repo is meant to grow. In rough priority order:
-
-- [ ] **Parameter robustness sweep** — grid search over `LOOKBACK`/`HOLD`/`N_LONG`, confirm Sharpe is stable across nearby parameter choices rather than a lucky single configuration
-- [ ] **Walk-forward validation** — split history into in-sample (parameter selection) and out-of-sample (true test) windows, rather than testing on the same data used to tune
-- [ ] **Equity curve visualization** — plot strategy vs. both baselines over time, not just final summary numbers, to show *when* the edge showed up or disappeared
-- [ ] **Cross-asset comparison** — run the identical signal logic on an equities universe, compare whether momentum behaves differently by asset class (and why)
-- [ ] **Second independent strategy** — likely mean-reversion or pairs trading, to start reasoning about a multi-strategy portfolio rather than a single signal
-- [ ] **Live paper trading integration** — same `strategy.py` logic reused against live data (Alpaca paper account), proving the signal function generalizes beyond historical backtest to a live decision loop
-
