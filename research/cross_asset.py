@@ -6,11 +6,7 @@ the equities trading calendar (252 days/year instead of 365).
 
 import sys
 from pathlib import Path
-
-# Let this run directly (python research/cross_asset.py) as well as via
-# `python -m research.cross_asset` — direct execution doesn't put the
-# project root on sys.path, so `engine`/`strategies` won't resolve otherwise.
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from engine.config import EQUITY_TICKERS, COMPARISON_TICK, EQUITIES_C_DAYS, LOOKBACK, HOLD, N_LONG, N_SHORT, VOL_LOOKBACK, GROSS_TARGET
 from engine.data import data

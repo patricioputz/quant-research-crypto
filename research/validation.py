@@ -3,11 +3,7 @@ tuning params on each train window and evaluating only on the unseen test window
 
 import sys
 from pathlib import Path
-
-# Let this run directly (python research/validation.py) as well as via
-# `python -m research.validation` — direct execution doesn't put the project
-# root on sys.path, so `engine`/`strategies` won't resolve otherwise.
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import pandas as pd
 from engine.config import TRAIN_DAYS, TEST_DAYS, GROSS_TARGET, CRYPTO_C_DAYS, LOOKBACK_VALUES, HOLD_VALUES

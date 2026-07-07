@@ -2,11 +2,7 @@
 
 import sys
 from pathlib import Path
-
-# Let this run directly (python research/sweep.py) as well as via
-# `python -m research.sweep` — direct execution doesn't put the project root
-# on sys.path, so `engine`/`strategies` won't resolve otherwise.
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from itertools import product
 from engine.config import STRAT_MOM_TICKERS, N_LONG, N_SHORT, LOOKBACK_VALUES, HOLD_VALUES, VOL_LOOKBACK, GROSS_TARGET, CRYPTO_C_DAYS
