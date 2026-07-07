@@ -4,10 +4,15 @@ Reuses cross_mom_strat unchanged, just pointed at an equities universe with
 the equities trading calendar (252 days/year instead of 365).
 """
 
-from engine.config import (
-    EQUITY_TICKERS, COMPARISON_TICK, EQUITIES_C_DAYS,
-    LOOKBACK, HOLD, N_LONG, N_SHORT, VOL_LOOKBACK, GROSS_TARGET,
-)
+import sys
+from pathlib import Path
+
+# Let this run directly (python research/cross_asset.py) as well as via
+# `python -m research.cross_asset` — direct execution doesn't put the
+# project root on sys.path, so `engine`/`strategies` won't resolve otherwise.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from engine.config import EQUITY_TICKERS, COMPARISON_TICK, EQUITIES_C_DAYS, LOOKBACK, HOLD, N_LONG, N_SHORT, VOL_LOOKBACK, GROSS_TARGET
 from engine.data import data
 from strategies.momentum import cross_mom_strat
 from engine.backtest import costs, net_pnl, compute_cum_returns, buy_and_hold
@@ -33,7 +38,7 @@ def run_cross_asset(close, returns, spy_returns):
     spy_performance = buy_and_hold(spy_returns)
     spy_sharpe, spy_mdd = metrics(spy_returns, EQUITIES_C_DAYS, spy_performance)
 
-    equity_bh_returns = returns.mean(axis=1)  # type: ignore[call-overload]
+    equity_bh_returns = returns.mean(axis=1) 
     equity_bh_performance = buy_and_hold(equity_bh_returns)
     equity_bh_sharpe, equity_bh_mdd = metrics(equity_bh_returns, EQUITIES_C_DAYS, equity_bh_performance)
 
