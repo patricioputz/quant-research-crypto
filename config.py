@@ -10,6 +10,6 @@ COMPARISON_TICK = 'SPY' # buy and hold ticker baseline
 CRYPTO_C_DAYS = 365 # crypto trading days
 EQUITIES_C_DAYS = 252 # equities trading days
 VOL_LOOKBACK = 30 # days of trailing volatility to scale positions by
- 
+LIQUIDATION_THRESHOLD = -0.5 # max single-day loss before forced close-out
 STRAT_MOM_TICKERS = ['BTC-USD', 'ETH-USD', 'SOL-USD', 'BNB-USD', 'ADA-USD',
                      'XRP-USD', 'AVAX-USD', 'DOT-USD', 'LINK-USD', 'DOGE-USD']
