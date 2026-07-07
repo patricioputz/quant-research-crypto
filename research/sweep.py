@@ -47,7 +47,7 @@ def run_sweep(close, returns, lookback_values, hold_values, n_long, n_short):
 
 
     table = summary_table(table_rows)
-    print(table)
+    print(table.to_string(index=False))
 
     # Find the best combination by Sharpe ratio
     best_combo = max(results, key=lambda x: x['sharpe'])

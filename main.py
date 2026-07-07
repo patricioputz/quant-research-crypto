@@ -51,7 +51,7 @@ def main():
         print(f"\n{'=' * 60}\n{title}\n{'=' * 60}")
 
     # Compare strategy against both baselines
-    section(f"1. STRATEGY VS. BASELINES  (LOOKBACK={LOOKBACK}, HOLD={HOLD})")
+    section(f"1. CRYPTO STRATEGY VS. BASELINES  (primary — LOOKBACK={LOOKBACK}, HOLD={HOLD})")
     table = summary_table([
         ("Momentum", mom_sharpe, mom_mdd, mom_performance.iloc[-1]),
         ("SPY B&H", spy_sharpe, spy_mdd, spy_performance.iloc[-1]),
@@ -73,9 +73,9 @@ def main():
     print(f"Overfitting gap:    {wf_train_sharpe - wf_test_sharpe:.2f}  (train Sharpe minus test Sharpe)")
 
     # Cross-asset check: does the same signal, unchanged, work on equities?
-    section("4. CROSS-ASSET CHECK  (same momentum signal, unchanged, on equities)")
+    section("4. CROSS-ASSET CHECK  (secondary — same signal, unchanged, on equities; SPY shown in section 1)")
     equity_close, equity_returns = data(EQUITY_TICKERS)
-    run_cross_asset(equity_close, equity_returns, spy_returns)
+    run_cross_asset(equity_close, equity_returns)
     print()
 
 
