@@ -1,6 +1,8 @@
 # --- Universe & data ---
 STRAT_MOM_TICKERS = ['BTC-USD', 'ETH-USD', 'SOL-USD', 'BNB-USD', 'ADA-USD',
                      'XRP-USD', 'AVAX-USD', 'DOT-USD', 'LINK-USD', 'DOGE-USD']
+EQUITY_TICKERS = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META',
+                  'NVDA', 'JPM', 'XOM', 'UNH', 'V']  # cross-asset comparison universe: 10 liquid large-caps
 COMPARISON_TICK = 'SPY'          # buy-and-hold baseline ticker
 START = '2021-01-01'             # data start date
 
