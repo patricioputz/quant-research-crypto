@@ -2,7 +2,7 @@
 
 from config import (
     STRAT_MOM_TICKERS, COMPARISON_TICK, CRYPTO_C_DAYS, EQUITIES_C_DAYS,
-    LOOKBACK, HOLD, N_LONG, N_SHORT, VOL_LOOKBACK
+    LOOKBACK, HOLD, N_LONG, N_SHORT, VOL_LOOKBACK, GROSS_TARGET
 )
 from data import data
 from strategy import cross_mom_strat
@@ -23,7 +23,7 @@ def main():
 
     # Run strategy with configured parameters
     strat_mom_returns, strat_mom_positions = cross_mom_strat(
-        universe_close, universe_returns, LOOKBACK, HOLD, N_LONG, N_SHORT, VOL_LOOKBACK
+        universe_close, universe_returns, LOOKBACK, HOLD, N_LONG, N_SHORT, VOL_LOOKBACK, GROSS_TARGET
     )
     strat_mom_costs = costs(strat_mom_positions)
     strat_mom_pnl = net_pnl(strat_mom_returns, strat_mom_costs)

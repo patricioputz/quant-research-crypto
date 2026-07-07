@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
-from config import LIQUIDATION_THRESHOLD
+from config import LIQUIDATION_THRESHOLD, GROSS_TARGET
 
 
-def cross_mom_strat(close, returns, lookback, hold, n_long, n_short, vol_lookback):
+def cross_mom_strat(close, returns, lookback, hold, n_long, n_short, vol_lookback, gross_target):
     """Cross-sectional momentum strategy with vol-scaled long/short positions.
 
     Ranks assets by momentum (past returns), goes long the top performers and
@@ -26,32 +26,38 @@ def cross_mom_strat(close, returns, lookback, hold, n_long, n_short, vol_lookbac
     """
     n_assets = close.shape[1]
 
+    # momentum signal, shifted so we only ever trade on info known at prior close
     mom_score = close.pct_change(lookback, fill_method=None).shift(1)
 
-    ranks = mom_score.rank(axis=1, ascending=False)
+    ranks = mom_score.rank(axis=1, ascending=False)  # rank 1 = best momentum
 
     longs = ranks <= n_long
     shorts = ranks > (n_assets - n_short)
 
-    vol = returns.rolling(vol_lookback).std().shift(1)
-    inv_vol = 1 / vol
+    vol = returns.rolling(vol_lookback).std().shift(1)  # trailing vol, also shifted (no lookahead)
+    inv_vol = 1 / vol  # low-vol names get bigger weight, high-vol (DOGE...) get shrunk
 
     long_inv_vol = inv_vol.where(longs, 0)
     short_inv_vol = inv_vol.where(shorts, 0)
 
-    long_weights = long_inv_vol.div(long_inv_vol.sum(axis=1), axis=0)
-    short_weights = short_inv_vol.div(short_inv_vol.sum(axis=1), axis=0)
+    long_weights = long_inv_vol.div(long_inv_vol.sum(axis=1), axis=0)   # normalize to 100% gross on long side
+    short_weights = short_inv_vol.div(short_inv_vol.sum(axis=1), axis=0)  # same for shorts
 
-    positions = long_weights.fillna(0) - short_weights.fillna(0)
+    positions = long_weights.fillna(0) - short_weights.fillna(0)  # net book: longs positive, shorts negative
+
+    # cap total exposure (longs+shorts) at gross_target, e.g. 1.0 = 100% gross
+    gross_exposure = long_weights.sum(axis=1) + short_weights.abs().sum(axis=1)
+    scale_ratio = gross_target / gross_exposure  # >1 means we were under target, shrinks/grows everything proportionally
+    positions = positions.mul(scale_ratio, axis=0)  # same trade, just resized
 
     rebalance_days = close.index[::hold]
     is_rebalance_day = positions.index.isin(rebalance_days)
 
-    positions.loc[~is_rebalance_day] = np.nan
-    positions = positions.ffill()
+    positions.loc[~is_rebalance_day] = np.nan  # only actually trade on rebalance days
+    positions = positions.ffill()  # hold the position steady until next rebalance
 
     position_returns = positions * returns
-    position_returns_capped = position_returns.clip(lower=LIQUIDATION_THRESHOLD)
+    position_returns_capped = position_returns.clip(lower=LIQUIDATION_THRESHOLD)  # simulate forced close-out, stop one name from tanking the book
     strat_returns = position_returns_capped.sum(axis=1)
 
     return strat_returns, positions

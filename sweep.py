@@ -1,7 +1,7 @@
 """Parameter sweep for cross-momentum strategy across lookback and hold periods."""
 
 from itertools import product
-from config import STRAT_MOM_TICKERS, CRYPTO_C_DAYS, VOL_LOOKBACK
+from config import STRAT_MOM_TICKERS, CRYPTO_C_DAYS, VOL_LOOKBACK, GROSS_TARGET
 from data import data
 from strategy import cross_mom_strat
 from backtest import costs, net_pnl, strat_performance
@@ -27,7 +27,7 @@ def run_sweep():
 
     for lb, h in product(lookback_values, hold_values):
         strat_mom_returns, strat_mom_positions = cross_mom_strat(
-            universe_close, universe_returns, lb, h, n_long, n_short, VOL_LOOKBACK
+            universe_close, universe_returns, lb, h, n_long, n_short, VOL_LOOKBACK, GROSS_TARGET
         )
         strat_mom_costs = costs(strat_mom_positions)
         strat_mom_pnl = net_pnl(strat_mom_returns, strat_mom_costs)
