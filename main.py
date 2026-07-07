@@ -47,33 +47,36 @@ def main():
         crypto_bh_returns, CRYPTO_C_DAYS, crypto_bh_performance
     )
 
+    def section(title):
+        print(f"\n{'=' * 60}\n{title}\n{'=' * 60}")
+
     # Compare strategy against both baselines
+    section(f"1. STRATEGY VS. BASELINES  (LOOKBACK={LOOKBACK}, HOLD={HOLD})")
     table = summary_table([
         ("Momentum", mom_sharpe, mom_mdd, mom_performance.iloc[-1]),
         ("SPY B&H", spy_sharpe, spy_mdd, spy_performance.iloc[-1]),
         ("Crypto B&H", crypto_bh_sharpe, crypto_bh_mdd, crypto_bh_performance.iloc[-1]),
     ])
-
-    print(table)
+    print(table.to_string(index=False))
 
     # Parameter sweep: how sensitive is the result to LOOKBACK/HOLD choice?
-    print("\nParameter sweep (LOOKBACK x HOLD grid):")
+    section("2. PARAMETER SWEEP  (LOOKBACK x HOLD grid)")
     run_sweep(universe_close, universe_returns, LOOKBACK_VALUES, HOLD_VALUES, N_LONG, N_SHORT)
 
     # Walk-forward validation: params picked on train data only, scored on held-out test data
+    section("3. WALK-FORWARD VALIDATION  (in-sample params -> out-of-sample test)")
     wf_lookback, wf_hold, wf_train_sharpe, wf_test_sharpe, wf_test_mdd, wf_test_final_value = walk_forward_analysis(
         universe_close, universe_returns, N_LONG, N_SHORT, VOL_LOOKBACK
     )
-    print(f"\nWalk-forward: selected LOOKBACK={wf_lookback}, HOLD={wf_hold} on train "
-          f"(train Sharpe {wf_train_sharpe:.3f})")
-    print(f"Out-of-sample: Sharpe {wf_test_sharpe:.3f}, Max DD {wf_test_mdd:.3f}, "
-          f"Final Value {wf_test_final_value:.3f}")
-    print(f"Overfitting gap: {wf_train_sharpe - wf_test_sharpe:.3f}")
+    print(f"Selected on train:  LOOKBACK={wf_lookback}, HOLD={wf_hold}  (train Sharpe {wf_train_sharpe:.2f})")
+    print(f"Out-of-sample:      Sharpe {wf_test_sharpe:.2f}, Max DD {wf_test_mdd:.1%}, Final Value {wf_test_final_value:.2f}x")
+    print(f"Overfitting gap:    {wf_train_sharpe - wf_test_sharpe:.2f}  (train Sharpe minus test Sharpe)")
 
     # Cross-asset check: does the same signal, unchanged, work on equities?
-    print("\nCross-asset check (momentum on equities, same params as crypto):")
+    section("4. CROSS-ASSET CHECK  (same momentum signal, unchanged, on equities)")
     equity_close, equity_returns = data(EQUITY_TICKERS)
     run_cross_asset(equity_close, equity_returns, spy_returns)
+    print()
 
 
 if __name__ == "__main__":
