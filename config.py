@@ -21,3 +21,9 @@ COST_BPS = 10  # transaction cost, in basis points, per unit turnover
 # --- Calendar / annualization ---
 CRYPTO_C_DAYS = 365    # crypto trades every day
 EQUITIES_C_DAYS = 252  # equities trade weekdays only
+
+# --- Walk-forward validation ---
+TRAIN_DAYS = 365 * 2         # days used to select best params (in-sample)
+TEST_DAYS = 365 // 2         # days used to evaluate those params (out-of-sample)
+WF_LOOKBACK_VALUES = [15, 30, 45, 60]
+WF_HOLD_VALUES = [3, 7, 14]
