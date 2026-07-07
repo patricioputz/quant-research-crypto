@@ -1,7 +1,7 @@
 """Main entry point for cross-momentum strategy backtesting and comparison."""
 
 from engine.config import (
-    STRAT_MOM_TICKERS, COMPARISON_TICK, CRYPTO_C_DAYS, EQUITIES_C_DAYS,
+    STRAT_MOM_TICKERS, EQUITY_TICKERS, COMPARISON_TICK, CRYPTO_C_DAYS, EQUITIES_C_DAYS,
     LOOKBACK, HOLD, N_LONG, N_SHORT, VOL_LOOKBACK, GROSS_TARGET,
     LOOKBACK_VALUES, HOLD_VALUES,
 )
@@ -12,6 +12,7 @@ from engine.metrics import metrics
 from engine.reporting import summary_table
 from research.sweep import run_sweep
 from research.validation import walk_forward_analysis
+from research.cross_asset import run_cross_asset
 
 
 def main():
@@ -68,6 +69,11 @@ def main():
     print(f"Out-of-sample: Sharpe {wf_test_sharpe:.3f}, Max DD {wf_test_mdd:.3f}, "
           f"Final Value {wf_test_final_value:.3f}")
     print(f"Overfitting gap: {wf_train_sharpe - wf_test_sharpe:.3f}")
+
+    # Cross-asset check: does the same signal, unchanged, work on equities?
+    print("\nCross-asset check (momentum on equities, same params as crypto):")
+    equity_close, equity_returns = data(EQUITY_TICKERS)
+    run_cross_asset(equity_close, equity_returns, spy_returns)
 
 
 if __name__ == "__main__":
