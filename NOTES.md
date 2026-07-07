@@ -23,6 +23,19 @@ Working notes on design decisions, bugs found, and what they actually mean — k
 
 ---
 
+## 2026-06-23 — Architecture decision: sweep vs. main.py
+
+**Question:** Should `main.py` run the parameter sweep internally, pick the best config, then run the final comparison — or keep the two scripts separate?
+
+**Options considered:**
+1. **Run sweep inside main.py every time** — always picks the best config automatically, but re-downloads data and tests all 12 combinations on every run. Muddles "validate/research" with "report" into one script.
+2. **Sweep is a one-time research step; hardcode the winner in config.py** — `main.py` stays simple and just reads `LOOKBACK`/`HOLD` from config as it already does. If the sweep is re-run with new data later and produces a different winner, config.py needs a manual update.
+3. **`sweep.py` writes the best result; `main.py` imports it automatically** — no manual step, but adds coupling between the two files and is overkill complexity for a one-person research project at this stage.
+
+**Decision:** Option 2. The sweep is a research/validation step, not part of the runtime path. Run it when data or universe changes, update config.py, and `main.py` stays clean. The "remember to update" risk is acceptable at this scale.
+
+---
+
 ## Template for future entries
 
 ```
