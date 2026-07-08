@@ -23,6 +23,9 @@ export default function Nav() {
           <a className="transition-colors hover:text-foreground" href="#method">
             04 METHOD
           </a>
+          <a className="transition-colors hover:text-foreground" href="#reflection">
+            05 REFLECTION
+          </a>
         </nav>
       </div>
     </header>

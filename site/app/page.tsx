@@ -4,6 +4,7 @@ import StrategySection from "@/components/StrategySection";
 import ResultsSection from "@/components/ResultsSection";
 import NumbersSection from "@/components/NumbersSection";
 import MethodSection from "@/components/MethodSection";
+import ReflectionSection from "@/components/ReflectionSection";
 import Footer from "@/components/Footer";
 import { loadEquityCurve } from "@/lib/data";
 
@@ -18,6 +19,7 @@ export default function Home() {
         <ResultsSection curve={curve} />
         <NumbersSection />
         <MethodSection />
+        <ReflectionSection />
       </main>
       <Footer />
     </div>
