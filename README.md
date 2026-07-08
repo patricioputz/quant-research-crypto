@@ -42,6 +42,7 @@ python3 main.py
 - Costs are real — turnover-based transaction costs, not gross returns
 - Sharpe annualized correctly per asset class (√365 crypto, √252 equities)
 - Parameters are validated out-of-sample, not just picked off a full-history sweep
+- Corrected for multiple testing — the parameter sweep tries 12 combos before picking a winner; deflated Sharpe ratio (Bailey & López de Prado) checks how much of the best in-sample Sharpe (1.12) is separable from the ~0.35 Sharpe you'd expect from noise alone across 12 trials. Result: 96.4% probability the edge is real, not luck from search. See [NOTES.md](NOTES.md).
 
 ## Built with
 
