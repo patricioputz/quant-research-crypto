@@ -76,7 +76,9 @@ export const crossAsset = {
 
 // Multiple testing correction — accounts for testing 12 parameter combos
 export const deflatedSharpe = {
-  probability: 0.964, // probability observed Sharpe exceeds expected-max-under-null
+  rawSharpe: 1.117, // best in-sample combo, LOOKBACK=45, HOLD=14
+  noiseBenchmark: 0.352, // expected max Sharpe from 12 trials under zero true skill
+  probability: 0.964, // probability observed Sharpe exceeds the noise benchmark
   trials: 12, // 4 LOOKBACK x 3 HOLD values
-  note: "Corrects for 12 independent trials (4 LOOKBACK × 3 HOLD values) before selecting best params — the probability this edge beats what you'd see from noise alone, not just luck from searching multiple combos.",
+  note: "Corrects for 12 independent trials (4 LOOKBACK × 3 HOLD values) before selecting best params. Pure noise from 12 random draws would produce a Sharpe around 0.35 — the actual best (1.12) clears that by 0.76, a 96.4% probability the edge is real.",
 } as const;

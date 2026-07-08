@@ -77,11 +77,14 @@ def run():
     best_pnl = net_pnl(best_returns, costs(best_positions))
     daily_sr = best_pnl.mean() / best_pnl.std()
 
-    psr, benchmark = deflated_sharpe_ratio(daily_sr, trial_sharpes, len(best_pnl), CRYPTO_C_DAYS)
+    psr, benchmark_daily = deflated_sharpe_ratio(daily_sr, trial_sharpes, len(best_pnl), CRYPTO_C_DAYS)
+    benchmark_annualized = benchmark_daily * math.sqrt(CRYPTO_C_DAYS)
 
     print(f"Best in-sample: LOOKBACK={best['lookback']}, HOLD={best['hold']}, Sharpe={best['sharpe']:.3f}")
     print(f"Trials tested: {len(trial_sharpes)}")
-    print(f"Probability observed Sharpe > expected-max-under-null: {psr:.1%}")
+    print(f"Expected max Sharpe from noise alone (12 trials): {benchmark_annualized:.3f}")
+    print(f"Observed Sharpe clears the noise benchmark by: {best['sharpe'] - benchmark_annualized:.3f}")
+    print(f"Deflated Sharpe Ratio (probability real edge > noise benchmark): {psr:.1%}")
 
 
 if __name__ == "__main__":

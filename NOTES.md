@@ -46,7 +46,7 @@ Re-swept LOOKBACK/HOLD specifically for equities (3-12 month windows, monthly-is
 
 The 12 parameter combos tested (4 LOOKBACK × 3 HOLD values) means we were running 12 independent trials before picking the best. Deflated Sharpe ratio (Bailey & López de Prado) corrects for this: it computes the Sharpe you'd expect to see just from noise if you tried 12 different parameter sets and kept the best one, then asks whether the actual best (LOOKBACK=45, HOLD=14, Sharpe 1.12) clears that bar.
 
-Result: 96.4% probability the observed Sharpe exceeds the expected-max-under-null benchmark — the in-sample edge is unlikely to be pure multiple-testing luck. This doesn't replace the walk-forward result (which is the harder, more honest test — actual unseen data, not a statistical correction), but it's a second, independent check that points the same direction.
+Result: the noise-alone benchmark for 12 trials is Sharpe 0.35 — that's what you'd expect to see just from picking the best of 12 random draws with zero real skill. The actual best (1.12) clears that by 0.76, giving a Deflated Sharpe Ratio (probability the real edge exceeds the noise benchmark) of 96.4%. This doesn't replace the walk-forward result (which is the harder, more honest test — actual unseen data, not a statistical correction), but it's a second, independent check that points the same direction.
 
 ## What I still don't know
 
