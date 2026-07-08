@@ -30,6 +30,10 @@ Average test Sharpe: 0.50. Stitched continuous out-of-sample Sharpe (concatenati
 
 **What this means:** the two single-split runs weren't wrong, they were unlucky/lucky draws from a distribution that actually centers around a modest positive Sharpe. The strategy has a real, if inconsistent, edge — not the 1.55 the naive sweep suggested, and not the near-zero either single split implied on its own. Performance is highly regime-dependent: strongly positive in some 6-month windows (2021 H2: 2.67), strongly negative in others (2021 H1: -1.12).
 
+Stitching every window's actual out-of-sample daily P&L into one continuous series and plotting it against equal-weight buy-and-hold (`research/plot.py`):
+
+![Out-of-sample equity curve vs buy-and-hold](research/oos_equity_curve.png)
+
 ## Does it generalize to equities?
 
 Ran the identical signal, unchanged crypto parameters (LOOKBACK=30, HOLD=7), on a 50-name equities universe. Sharpe: -0.22. Made sense once I checked the horizon — crypto-tuned parameters sit in equities' short-term reversal zone (1 week to 1 month), not the momentum zone (3-12 months) that actually works for equities, per the standard momentum literature (Jegadeesh-Titman).

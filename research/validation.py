@@ -12,7 +12,7 @@ from strategies.momentum import cross_mom_strat
 from engine.backtest import costs, net_pnl, compute_cum_returns
 from engine.metrics import metrics
 
-def walk_forward_analysis(close, returns, n_long, n_short, vol_lookback):
+def walk_forward_analysis(close, returns, n_long, n_short, vol_lookback) -> tuple[pd.DataFrame, float, float]:
     """Select lookback/hold on a training window, evaluate on the held-out test window.
     """
     window_results = []
@@ -50,7 +50,7 @@ def walk_forward_analysis(close, returns, n_long, n_short, vol_lookback):
     oos_performance = compute_cum_returns(oos_pnl)
     oos_sharpe, oos_mdd = metrics(oos_pnl, CRYPTO_C_DAYS, oos_performance)
 
-    return pd.DataFrame(window_results), oos_sharpe, oos_mdd
+    return pd.DataFrame(window_results), oos_sharpe, oos_mdd, oos_performance
 
 if __name__ == "__main__":
     from engine.config import CRYPTO_TICKERS, N_LONG, N_SHORT, VOL_LOOKBACK
@@ -58,7 +58,7 @@ if __name__ == "__main__":
 
     universe_close, universe_returns = data(CRYPTO_TICKERS)
 
-    windows, oos_sharpe, oos_mdd = walk_forward_analysis(
+    windows, oos_sharpe, oos_mdd, oos_performance = walk_forward_analysis(
         universe_close, universe_returns, N_LONG, N_SHORT, VOL_LOOKBACK
     )
 
