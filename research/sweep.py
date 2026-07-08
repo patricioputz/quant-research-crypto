@@ -13,7 +13,7 @@ from engine.metrics import metrics
 from engine.reporting import summary_table
 
 
-def run_sweep(close, returns, lookback_values, hold_values, n_long, n_short, calendar_days=CRYPTO_C_DAYS):
+def run_sweep(close, returns, lookback_values, hold_values, n_long, n_short, calendar_days=CRYPTO_C_DAYS, verbose=True):
     """Execute a grid search over lookback and hold period parameters.
 
     Tests all combinations of lookback (momentum calculation period) and hold
@@ -51,7 +51,8 @@ def run_sweep(close, returns, lookback_values, hold_values, n_long, n_short, cal
 
 
     table = summary_table(table_rows)
-    print(table.to_string(index=False))
+    if verbose:
+        print(table.to_string(index=False))
 
     # Find the best combination by Sharpe ratio
     best_combo = max(results, key=lambda x: x['sharpe'])
