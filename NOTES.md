@@ -42,6 +42,10 @@ Ran the identical signal, unchanged crypto parameters (LOOKBACK=30, HOLD=7), on 
 
 Re-swept LOOKBACK/HOLD specifically for equities (3-12 month windows, monthly-ish holds), with the annualization bug fixed (had been using 365 days for equities, which only trade ~252/year — a real bug that overstated Sharpe by roughly 20%). Best: LOOKBACK=252, HOLD=21, Sharpe 0.64. Direction flipped from negative to positive once tuned to the right horizon — still trails equal-weight buy-and-hold (1.11) in this sample, which makes sense: a market-neutral long/short book gives up beta exposure that pure buy-and-hold benefits from in a strong bull run.
 
+## Multiple testing correction
+
+The 12 parameter combos tested (4 LOOKBACK × 3 HOLD values) means we were running 12 independent trials before picking the best. Deflated Sharpe ratio (Bailey & López de Prado) corrects for this: it estimates the probability the observed out-of-sample edge is real, not just luck from sampling 12 different parameter sets. Reports the probability the true Sharpe exceeds the benchmark expected under random search — a more honest way to report.
+
 ## What I still don't know
 
 - Whether the crypto universe's correlation structure (most alts move with BTC) is diluting the "cross-sectional" signal into something closer to a leveraged BTC-beta bet — flagged, not yet measured.

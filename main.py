@@ -77,6 +77,11 @@ def main():
     print("\nEquities-tuned sweep (re-tuned lookback/hold):")
     sweep_equities(equity_close, equity_returns)
 
+    # --- 5. Deflated Sharpe Ratio ---
+    section("5. DEFLATED SHARPE RATIO  (multiple testing correction)")
+    from research.deflated_sharpe import run as dsr_run
+    dsr_run()
+
 
 if __name__ == "__main__":
     main()
