@@ -55,7 +55,7 @@ def main():
 
     # --- 3 & 4. Walk-forward: rolling only (single-split is a special case, skip duplicating) ---
     section("3. ROLLING WALK-FORWARD VALIDATION  (multiple train/test windows)")
-    windows, oos_sharpe, oos_mdd = walk_forward_analysis(
+    windows, oos_sharpe, oos_mdd, oos_performance = walk_forward_analysis(
         universe_close, universe_returns, N_LONG, N_SHORT, VOL_LOOKBACK
     )
     print(windows.to_string(index=False))

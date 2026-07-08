@@ -1,6 +1,10 @@
 """Plot the stitched out-of-sample equity curve from rolling walk-forward
 against equal-weight buy-and-hold, over the same date range."""
 
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import matplotlib.pyplot as plt
 from engine.config import CRYPTO_TICKERS, N_LONG, N_SHORT, VOL_LOOKBACK
 from engine.data import data
@@ -15,8 +19,8 @@ def plot_oos_vs_buy_and_hold(close, returns, n_long, n_short, vol_lookback):
         close, returns, n_long, n_short, vol_lookback
     )
 
-    bh_returns = returns.mean(axis=1)
-    bh_performance = compute_cum_returns(bh_returns)
+    bh_returns = returns.mean(axis=1).loc[oos_performance.index]   # ← slice raw returns first
+    bh_performance = compute_cum_returns(bh_returns)   
 
     plt.figure(figsize=(10, 5))
     plt.plot(oos_performance.index, oos_performance.values, label=f"Strategy (OOS, Sharpe {oos_sharpe:.2f})")

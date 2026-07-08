@@ -28,6 +28,8 @@ Fixed it by rolling the train/test window forward through the whole history — 
 
 Average test Sharpe: 0.50. Stitched continuous out-of-sample Sharpe (concatenating every window's actual daily P&L into one series): 0.60. Standard deviation of test Sharpe across windows: 1.32 — larger than the mean.
 
+These are two different calculations, not conflicting estimates. The average (0.50) treats each of the 7 windows as one data point and averages their individual Sharpes equally, regardless of how long or volatile each window was. The stitched number (0.59-0.60, varies slightly run-to-run as underlying price data updates) is computed once on the single continuous daily P&L series formed by concatenating all 7 test windows in order — it reflects what you'd have actually earned trading straight through, re-tuning parameters at each window boundary. I use both: the average tells you how consistent the edge is window-to-window, the stitched number tells you the realized result of the whole strategy.
+
 **What this means:** the two single-split runs weren't wrong, they were unlucky/lucky draws from a distribution that actually centers around a modest positive Sharpe. The strategy has a real, if inconsistent, edge — not the 1.55 the naive sweep suggested, and not the near-zero either single split implied on its own. Performance is highly regime-dependent: strongly positive in some 6-month windows (2021 H2: 2.67), strongly negative in others (2021 H1: -1.12).
 
 Stitching every window's actual out-of-sample daily P&L into one continuous series and plotting it against equal-weight buy-and-hold (`research/plot.py`):
