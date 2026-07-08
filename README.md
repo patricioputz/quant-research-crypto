@@ -1,5 +1,10 @@
 # Cross-Sectional Momentum Backtester
 
+![Python](https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white)
+![pandas](https://img.shields.io/badge/pandas-3.0-150458?logo=pandas&logoColor=white)
+![NumPy](https://img.shields.io/badge/numpy-2.5-013243?logo=numpy&logoColor=white)
+![yfinance](https://img.shields.io/badge/data-yfinance-lightgrey)
+
 A crypto and equities momentum strategy, backtested with real risk controls and validated out-of-sample — built to answer one question honestly: does this edge actually exist, or did I just find a good-looking number by accident?
 
 **Key finding:** an in-sample parameter sweep found Sharpe 1.55. Rolling walk-forward validation across 7 windows (2021–2024) showed the real out-of-sample Sharpe averages 0.50, with high variance across regimes. Full writeup: [NOTES.md](research/NOTES.md).
@@ -29,3 +34,7 @@ python3 main.py
 - Costs are real — turnover-based transaction costs, not gross returns
 - Sharpe annualized correctly per asset class (√365 crypto, √252 equities)
 - Parameters are validated out-of-sample, not just picked off a full-history sweep
+
+## Built with
+
+Python · pandas · NumPy · yfinance
