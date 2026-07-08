@@ -45,21 +45,11 @@ Re-swept LOOKBACK/HOLD specifically for equities (3-12 month windows, monthly-is
 ## What I still don't know
 
 - Whether the crypto universe's correlation structure (most alts move with BTC) is diluting the "cross-sectional" signal into something closer to a leveraged BTC-beta bet — flagged, not yet measured.
-- Whether the liquidation threshold is capping the right thing (per-asset contribution before summing) — needs one more direct check.
 - Whether 7 windows is enough to trust the variance estimate, or if it needs a longer history / more granular windows to be conclusive.
 
 ## Why this is the actual finding
 
 Most backtests report the best in-sample number and stop. The real finding here isn't "Sharpe 1.55" or "Sharpe 0.60" — it's that naive parameter selection substantially inflates apparent performance, and that inflation is only visible once you validate out-of-sample properly. That gap, and being honest about it, is the point.
-
-## Two refactor bugs that would've crashed silently
-
-Restructured the codebase into `engine/`/`strategies/`/`research/` packages partway through, and refactoring introduced a couple of call-site bugs that only surfaced when I actually ran the full pipeline end-to-end instead of eyeballing the diff:
-
-- `main.py` was calling `sweep_equities(equity_close, equity_returns, N_LONG_EQUITY, N_SHORT_EQUITY)` — but after I'd rewritten `sweep_equities` to take just `(close, returns)`, that call still had two extra positional args left over from an earlier version. Would've been a `TypeError` on the first real run.
-- Similarly, `run_cross_asset` was being called with a `spy_returns` Series landing in the `lookback` argument slot (which expects an int) — leftover from before I removed the SPY comparison from that function.
-
-Neither was caught by just reading the code — both only showed up by running `main.py` and watching it fail. Take-away: no type checking on function boundaries and no tests means refactors are only as safe as your last full run. This is basically the argument for the unit tests item still sitting on the roadmap.
 
 ## Position count now scales with universe size
 
