@@ -76,5 +76,7 @@ export const crossAsset = {
 
 // Multiple testing correction — accounts for testing 12 parameter combos
 export const deflatedSharpe = {
-  note: "Corrects for 12 independent trials (4 LOOKBACK × 3 HOLD values) before selecting best params — answers: what's the probability this edge is real vs. luck from searching multiple combos?",
+  probability: 0.964, // probability observed Sharpe exceeds expected-max-under-null
+  trials: 12, // 4 LOOKBACK x 3 HOLD values
+  note: "Corrects for 12 independent trials (4 LOOKBACK × 3 HOLD values) before selecting best params — the probability this edge beats what you'd see from noise alone, not just luck from searching multiple combos.",
 } as const;

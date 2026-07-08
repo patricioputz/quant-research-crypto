@@ -50,10 +50,13 @@ def expected_max_sharpe(trial_sharpes):
     return sigma * ((1 - gamma) * norm_ppf(1 - 1/n) + gamma * norm_ppf(1 - 1/(n*math.e)))
 
 
-def deflated_sharpe_ratio(obs_daily_sr, trial_sharpes, n_obs):
+def deflated_sharpe_ratio(obs_daily_sr, trial_sharpes_annualized, n_obs, calendar_days):
     """DSR: probability the true daily Sharpe exceeds the benchmark implied
-    by testing multiple parameter combos."""
-    benchmark = expected_max_sharpe(trial_sharpes)
+    by testing multiple parameter combos. trial_sharpes_annualized are
+    converted to daily scale so they're comparable to obs_daily_sr —
+    mixing annualized and per-period Sharpes silently breaks the z-score."""
+    trial_sharpes_daily = [s / math.sqrt(calendar_days) for s in trial_sharpes_annualized]
+    benchmark = expected_max_sharpe(trial_sharpes_daily)
     denom = math.sqrt(n_obs - 1)
     z = (obs_daily_sr - benchmark) * denom
     psr = norm_cdf(z)
@@ -74,7 +77,7 @@ def run():
     best_pnl = net_pnl(best_returns, costs(best_positions))
     daily_sr = best_pnl.mean() / best_pnl.std()
 
-    psr, benchmark = deflated_sharpe_ratio(daily_sr, trial_sharpes, len(best_pnl))
+    psr, benchmark = deflated_sharpe_ratio(daily_sr, trial_sharpes, len(best_pnl), CRYPTO_C_DAYS)
 
     print(f"Best in-sample: LOOKBACK={best['lookback']}, HOLD={best['hold']}, Sharpe={best['sharpe']:.3f}")
     print(f"Trials tested: {len(trial_sharpes)}")
