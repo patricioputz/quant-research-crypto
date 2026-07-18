@@ -14,7 +14,7 @@ export default function ReflectionSection() {
         </Reveal>
         <Reveal delay={0.12}>
           <p className="mt-6 max-w-2xl text-sm/relaxed text-ink-2">
-            The parameter sweep gave me a Sharpe of 1.55 and I almost stopped
+            The parameter sweep gave me a Sharpe of 1.11 and I almost stopped
             there — it looked great, and that was exactly the problem. Once I
             forced myself to validate out-of-sample, the real number dropped
             to something smaller and a lot noisier, and that gap taught me

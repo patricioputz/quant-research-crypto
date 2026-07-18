@@ -67,18 +67,18 @@ export const walkForwardWindows = [
 
 // Cross-asset check — same signal on a 50-name equities universe.
 export const crossAsset = {
-  naiveSharpe: -0.22, // crypto params, unchanged
+  naiveSharpe: -0.25, // crypto params, unchanged
   tunedSharpe: 0.64, // re-swept for equities' 3-12mo momentum horizon
   tunedLookback: 252,
-  tunedHold: 21,
-  equityBuyHoldSharpe: 1.11,
+  tunedHold: 42,
+  equityBuyHoldSharpe: 1.10,
 } as const;
 
 // Multiple testing correction — accounts for testing 12 parameter combos
 export const deflatedSharpe = {
-  rawSharpe: 1.117, // best in-sample combo, LOOKBACK=45, HOLD=14
-  noiseBenchmark: 0.352, // expected max Sharpe from 12 trials under zero true skill
-  probability: 0.964, // probability observed Sharpe exceeds the noise benchmark
+  rawSharpe: 1.105, // sweep-best in-sample combo, LOOKBACK=45, HOLD=14 (distinct from the 1.55 avg walk-forward TRAIN Sharpe below)
+  noiseBenchmark: 0.354, // expected max Sharpe from 12 trials under zero true skill
+  probability: 0.962, // probability observed Sharpe exceeds the noise benchmark
   trials: 12, // 4 LOOKBACK x 3 HOLD values
-  note: "Corrects for 12 independent trials (4 LOOKBACK × 3 HOLD values) before selecting best params. Pure noise from 12 random draws would produce a Sharpe around 0.35 — the actual best (1.12) clears that by 0.76, a 96.4% probability the edge is real.",
+  note: "Corrects for 12 independent trials (4 LOOKBACK × 3 HOLD values) before selecting best params. Pure noise from 12 random draws would produce a Sharpe around 0.35 — the actual sweep-best (1.11, LOOKBACK=45/HOLD=14) clears that by 0.75, a 96.2% probability the edge is real. (Not to be confused with the 1.55 average in-sample TRAINING Sharpe from the rolling walk-forward below — that's a different quantity, averaged across 7 windows' own best params.)",
 } as const;

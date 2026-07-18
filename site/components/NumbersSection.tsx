@@ -101,7 +101,7 @@ export default function NumbersSection() {
             Running the crypto-tuned parameters unchanged on equities gave
             Sharpe <span className="font-mono text-foreground">{crossAsset.naiveSharpe.toFixed(2)}</span> —
             crypto-speed parameters sit in equities&apos; short-term reversal
-            zone, not its momentum zone. Re-tuned to a{" "}
+            zone, not its momentum zone. Re-swept to a{" "}
             {crossAsset.tunedLookback}-day lookback /{" "}
             {crossAsset.tunedHold}-day hold (3–12 month horizon, standard for
             equities momentum), Sharpe flips to{" "}

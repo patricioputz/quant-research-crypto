@@ -9,7 +9,7 @@
 
 A crypto and equities momentum strategy, backtested with real risk controls and validated out-of-sample — built to answer one question honestly: does this edge actually exist, or did I just find a good-looking number by accident?
 
-**Key finding:** an in-sample parameter sweep found Sharpe 1.55. Rolling walk-forward validation across 7 windows (2021–2024) showed the real out-of-sample Sharpe averages 0.50, with high variance across regimes. Full writeup: [NOTES.md](NOTES.md).
+**Key finding:** the full-history parameter sweep's best in-sample Sharpe was 1.11 (LOOKBACK=45, HOLD=14) — the 7 rolling walk-forward windows' own best params averaged a 1.55 in-sample training Sharpe, a related but distinct number. Rolling walk-forward validation across those 7 windows (2021–2024) showed the real out-of-sample Sharpe averages 0.50, with high variance across regimes. Full writeup: [NOTES.md](NOTES.md).
 
 ![Out-of-sample equity curve vs buy-and-hold](research/oos_equity_curve.png)
 
@@ -17,7 +17,7 @@ A crypto and equities momentum strategy, backtested with real risk controls and 
 
 If you look at the chart above and think "buy-and-hold made more money, so the strategy is worse" — that's the natural read, and it's missing the point. Crypto buy-and-hold returned more in this window because crypto went almost straight up for most of 2021–2024; riding that trend with no risk management will beat almost anything in a raw-return contest. But buy-and-hold also had a **-82% max drawdown** along the way (see `main.py` section 1 output) — meaning at some point it lost over four-fifths of its value. Very few people can actually hold through that without selling at the bottom. This strategy's out-of-sample max drawdown was **-22%**, with an average Sharpe of **0.50** (risk-adjusted return — return per unit of volatility taken on). Lower total return, dramatically less pain to get there.
 
-That's the actual comparison: not "which number is bigger" but "which one would you have actually been able to hold, and does the strategy earn its return from a repeatable process rather than from riding one asset class's lucky run." A backtest that just reports the best-looking number and stops (the in-sample sweep here found Sharpe 1.55) is measuring how well you fit noise, not whether the edge is real — that's why every number above is reported out-of-sample, and why the honest answer is "yes, there's a real edge, and it's smaller and choppier than the sweep initially suggested." Full reasoning and every wrong turn: [NOTES.md](NOTES.md).
+That's the actual comparison: not "which number is bigger" but "which one would you have actually been able to hold, and does the strategy earn its return from a repeatable process rather than from riding one asset class's lucky run." A backtest that just reports the best-looking number and stops (the in-sample sweep here found Sharpe 1.11) is measuring how well you fit noise, not whether the edge is real — that's why every number above is reported out-of-sample, and why the honest answer is "yes, there's a real edge, and it's smaller and choppier than the sweep initially suggested." Full reasoning and every wrong turn: [NOTES.md](NOTES.md).
 
 ## What it does
 
@@ -44,7 +44,7 @@ python3 main.py
 - Costs are real — turnover-based transaction costs, not gross returns
 - Sharpe annualized correctly per asset class (√365 crypto, √252 equities)
 - Parameters are validated out-of-sample, not just picked off a full-history sweep
-- Corrected for multiple testing — the parameter sweep tries 12 combos before picking a winner; deflated Sharpe ratio (Bailey & López de Prado) checks how much of the best in-sample Sharpe (1.12) is separable from the ~0.35 Sharpe you'd expect from noise alone across 12 trials. Result: 96.4% probability the edge is real, not luck from search. See [NOTES.md](NOTES.md).
+- Corrected for multiple testing — the parameter sweep tries 12 combos before picking a winner; deflated Sharpe ratio (Bailey & López de Prado) checks how much of the sweep-best in-sample Sharpe (1.11) is separable from the ~0.35 Sharpe you'd expect from noise alone across 12 trials. Result: 96.2% probability the edge is real, not luck from search. See [NOTES.md](NOTES.md).
 
 ## Built with
 

@@ -6,7 +6,7 @@ A cross-sectional momentum strategy: rank assets by trailing return, long the to
 
 ## The parameter sweep looked great — that was the problem
 
-Grid-searching LOOKBACK (15-60 days) × HOLD (3-14 days) on the full history found a best combo of LOOKBACK=15, HOLD=7, Sharpe 1.55 average across the search. Reporting that number alone would have been the mistake — it's exactly the kind of in-sample-fit number that falls apart under a follow-up question.
+Grid-searching LOOKBACK (15-60 days) × HOLD (3-14 days) on the full history found a best combo of LOOKBACK=45, HOLD=14, Sharpe 1.11. Reporting that number alone would have been the mistake — it's exactly the kind of in-sample-fit number that falls apart under a follow-up question.
 
 ## Walk-forward, first attempt: unstable
 
@@ -30,7 +30,7 @@ Average test Sharpe: 0.50. Stitched continuous out-of-sample Sharpe (concatenati
 
 These are two different calculations, not conflicting estimates. The average (0.50) treats each of the 7 windows as one data point and averages their individual Sharpes equally, regardless of how long or volatile each window was. The stitched number (0.59-0.60, varies slightly run-to-run as underlying price data updates) is computed once on the single continuous daily P&L series formed by concatenating all 7 test windows in order — it reflects what you'd have actually earned trading straight through, re-tuning parameters at each window boundary. I use both: the average tells you how consistent the edge is window-to-window, the stitched number tells you the realized result of the whole strategy.
 
-**What this means:** the two single-split runs weren't wrong, they were unlucky/lucky draws from a distribution that actually centers around a modest positive Sharpe. The strategy has a real, if inconsistent, edge — not the 1.55 the naive sweep suggested, and not the near-zero either single split implied on its own. Performance is highly regime-dependent: strongly positive in some 6-month windows (2021 H2: 2.67), strongly negative in others (2021 H1: -1.12).
+**What this means:** the two single-split runs weren't wrong, they were unlucky/lucky draws from a distribution that actually centers around a modest positive Sharpe. The strategy has a real, if inconsistent, edge — not the 1.11 the naive full-history sweep suggested (nor the 1.55 average in-sample training Sharpe across the 7 rolling windows), and not the near-zero either single split implied on its own. Performance is highly regime-dependent: strongly positive in some 6-month windows (2021 H2: 2.67), strongly negative in others (2021 H1: -1.12).
 
 Stitching every window's actual out-of-sample daily P&L into one continuous series and plotting it against equal-weight buy-and-hold (`research/plot.py`):
 
@@ -38,15 +38,15 @@ Stitching every window's actual out-of-sample daily P&L into one continuous seri
 
 ## Does it generalize to equities?
 
-Ran the identical signal, unchanged crypto parameters (LOOKBACK=30, HOLD=7), on a 50-name equities universe. Sharpe: -0.22. Made sense once I checked the horizon — crypto-tuned parameters sit in equities' short-term reversal zone (1 week to 1 month), not the momentum zone (3-12 months) that actually works for equities, per the standard momentum literature (Jegadeesh-Titman).
+Ran the identical signal, unchanged crypto parameters (LOOKBACK=30, HOLD=7), on a 50-name equities universe. Sharpe: -0.25. Made sense once I checked the horizon — crypto-tuned parameters sit in equities' short-term reversal zone (1 week to 1 month), not the momentum zone (3-12 months) that actually works for equities, per the standard momentum literature (Jegadeesh-Titman).
 
-Re-swept LOOKBACK/HOLD specifically for equities (3-12 month windows, monthly-ish holds), with the annualization bug fixed (had been using 365 days for equities, which only trade ~252/year — a real bug that overstated Sharpe by roughly 20%). Best: LOOKBACK=252, HOLD=21, Sharpe 0.64. Direction flipped from negative to positive once tuned to the right horizon — still trails equal-weight buy-and-hold (1.11) in this sample, which makes sense: a market-neutral long/short book gives up beta exposure that pure buy-and-hold benefits from in a strong bull run.
+Re-swept LOOKBACK/HOLD specifically for equities (3-12 month windows, monthly-ish holds), with the annualization bug fixed (had been using 365 days for equities, which only trade ~252/year — a real bug that overstated Sharpe by roughly 20%). Best: LOOKBACK=252, HOLD=42, Sharpe 0.64. Direction flipped from negative to positive once tuned to the right horizon — still trails equal-weight buy-and-hold (1.10) in this sample, which makes sense: a market-neutral long/short book gives up beta exposure that pure buy-and-hold benefits from in a strong bull run.
 
 ## Multiple testing correction
 
-The 12 parameter combos tested (4 LOOKBACK × 3 HOLD values) means we were running 12 independent trials before picking the best. Deflated Sharpe ratio (Bailey & López de Prado) corrects for this: it computes the Sharpe you'd expect to see just from noise if you tried 12 different parameter sets and kept the best one, then asks whether the actual best (LOOKBACK=45, HOLD=14, Sharpe 1.12) clears that bar.
+The 12 parameter combos tested (4 LOOKBACK × 3 HOLD values) means we were running 12 independent trials before picking the best. Deflated Sharpe ratio (Bailey & López de Prado) corrects for this: it computes the Sharpe you'd expect to see just from noise if you tried 12 different parameter sets and kept the best one, then asks whether the actual sweep-best (LOOKBACK=45, HOLD=14, Sharpe 1.11) clears that bar.
 
-Result: the noise-alone benchmark for 12 trials is Sharpe 0.35 — that's what you'd expect to see just from picking the best of 12 random draws with zero real skill. The actual best (1.12) clears that by 0.76, giving a Deflated Sharpe Ratio (probability the real edge exceeds the noise benchmark) of 96.4%. This doesn't replace the walk-forward result (which is the harder, more honest test — actual unseen data, not a statistical correction), but it's a second, independent check that points the same direction.
+Result: the noise-alone benchmark for 12 trials is Sharpe 0.35 — that's what you'd expect to see just from picking the best of 12 random draws with zero real skill. The actual sweep-best (1.11) clears that by 0.75, giving a Deflated Sharpe Ratio (probability the real edge exceeds the noise benchmark) of 96.2%. This doesn't replace the walk-forward result (which is the harder, more honest test — actual unseen data, not a statistical correction), but it's a second, independent check that points the same direction.
 
 ## What I still don't know
 
@@ -55,7 +55,7 @@ Result: the noise-alone benchmark for 12 trials is Sharpe 0.35 — that's what y
 
 ## Why this is the actual finding
 
-Most backtests report the best in-sample number and stop. The real finding here isn't "Sharpe 1.55" or "Sharpe 0.60" — it's that naive parameter selection substantially inflates apparent performance, and that inflation is only visible once you validate out-of-sample properly. That gap, and being honest about it, is the point.
+Most backtests report the best in-sample number and stop. The real finding here isn't "Sharpe 1.11" (the sweep-best) or "Sharpe 0.60" (the stitched OOS result) — it's that naive parameter selection substantially inflates apparent performance, and that inflation is only visible once you validate out-of-sample properly. That gap, and being honest about it, is the point.
 
 ## Position count now scales with universe size
 
